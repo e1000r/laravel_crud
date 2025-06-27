@@ -27,31 +27,54 @@ class ContactController extends Controller
     }
 
     public function store(Request $request) {
-        Contact::create($request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:contacts',
-            'contact' => 'required|digits:9'
-        ]));
+        try {
+            Contact::create($request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:contacts',
+                'contact' => 'required|digits:9'
+            ]));
 
-        return redirect()->route('contacts.index')->with('success', 'Contact stored successfully.');
+            return redirect()->route('contacts.index')
+                            ->with('success', 'Contact stored successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Failed to store contact. Please try again.');
+        }
     }
 
     public function update(Request $request)
     {
-        Contact::update($request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:contacts',
-            'contact' => 'required|digits:9'
-        ]));
+        try {
+            Contact::update($request->validate([
+                'name' => 'required',
+                'email' => 'required|email|unique:contacts',
+                'contact' => 'required|digits:9'
+            ]));
 
-        return redirect()->route('contacts.index')->with('success', 'Contact updated successfully.');
+            return redirect()->route('contacts.index')
+                            ->with('success', 'Contact updated successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Failed to update contact. Please try again.');
+        }
     }
 
-    public function destroy(Contact $contact)
+    public function destroy()
     {
-        $contact->delete();
+        try {
+            Contact::delete();
 
-        return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully.');
+            return redirect()->route('contacts.index')
+                            ->with('success', 'Contact deleted successfully.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'Failed to delete contact. Please try again.');
+        }
     }
-
 }
