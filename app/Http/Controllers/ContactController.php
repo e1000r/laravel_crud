@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Contact;
+use Log;
 
 class ContactController extends Controller
 {
@@ -26,9 +27,9 @@ class ContactController extends Controller
         return view('contacts.edit', compact('contact'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request, Contact $contact) {
         try {
-            Contact::create($request->validate([
+            $contact::create($request->validate([
                 'name' => 'required',
                 'email' => 'required|email|unique:contacts',
                 'contact' => 'required|digits:9'
@@ -44,12 +45,12 @@ class ContactController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function update(Request $request, Contact $contact)
     {
         try {
-            Contact::update($request->validate([
-                'name' => 'required',
-                'email' => 'required|email|unique:contacts',
+            $contact->update($request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:contacts,email,' . $contact->id,
                 'contact' => 'required|digits:9'
             ]));
 
@@ -57,16 +58,17 @@ class ContactController extends Controller
                             ->with('success', 'Contact updated successfully.');
 
         } catch (\Exception $e) {
+            Log::error($e);
             return redirect()->back()
                             ->withInput()
                             ->with('error', 'Failed to update contact. Please try again.');
         }
     }
 
-    public function destroy()
+    public function destroy(Contact $contact)
     {
         try {
-            Contact::delete();
+            $contact->delete();
 
             return redirect()->route('contacts.index')
                             ->with('success', 'Contact deleted successfully.');

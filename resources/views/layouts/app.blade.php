@@ -31,6 +31,7 @@
         </main>
 
         <footer>
+            <hr/>
             <p>© {{ date('Y') }} My Contacts App | Alfasoft</p>
         </footer>
     </body>
